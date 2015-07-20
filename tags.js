@@ -199,7 +199,7 @@ function generateTags(sourcefile,source) {
 function tagFile() {
 
   // TODO: sort by further fields, too
-  tags.sort(function(x,y){ return x.name.localeCompare(y.name) });
+  tags.sort(function(x,y){ return x.name > y.name ? 1 : x.name == y.name ? 0 : -1 });
 
   var tagFile = [];
 
