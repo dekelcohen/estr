@@ -9,6 +9,7 @@
 "use strict";
 
 var fs          = require("fs");
+var ndpath          = require("path");
 var tags        = require("./tags.js");
 var scope_utils = require("./scope_utils.js");
 var ast_utils   = require("./ast_utils.js");
@@ -211,7 +212,7 @@ function processJSfiles(paths,action) {
       results.push( action(path,source) );
     } else if (stat.isDirectory()) {
       var dirContents = fs.readdirSync(path);
-      results.concat( processJSfiles(dirContents.map(function(p){return path+'/'+p})
+      results.concat( processJSfiles(dirContents.map(function(p){return path + ndpath.sep + p})
                                     ,action) );
     } else {
       console.error("ignoring "+path);
