@@ -7,6 +7,9 @@ var traverse = require("./ast_utils.js").traverse;
 
 var tags = [];
 
+var plugins = [];
+
+
 // parse JS file, extract tags by traversing AST while tracking scopes
 function generateTags(sourcefile,source) {
 
@@ -18,6 +21,10 @@ function generateTags(sourcefile,source) {
     }
 
     var scopes = [];  // stack of function body scopes
+
+    plugins.forEach(function(plugin) { 
+        plugin.init(tags);
+    });
 
     function extractTags(node,children){
         var scope;
@@ -180,6 +187,10 @@ function generateTags(sourcefile,source) {
 
           });
 
+        } else if (node.type==='CallExpression') {            
+            plugins.forEach(function(plugin) { 
+              plugin.visitCallExpression(node, sourcefile);
+            });
         }
 
         children.forEach(traverse(extractTags));
@@ -229,6 +240,42 @@ function flags() {
   return {tagFile: tagFile}
 }
 
+//TODO:Move it to its own file Begin Plugin
+function SenchaTouchPlugin () {  
+  this.tags = undefined;
+}
+
+SenchaTouchPlugin.prototype.init = function(tags) {
+  this.tags = tags;
+}
+
+SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {
+  if (ndCall.callee && ndCall.callee.object && ndCall.callee.object.name === 'Ext')
+  {
+    if (ndCall.callee && ndCall.callee.property && ndCall.callee.property.name === 'define')
+    {
+        var argName = ndCall.arguments && ndCall.arguments.length > 0 && ndCall.arguments[0];
+        if (argName && argName.type === 'Literal' && argName.value)
+        {
+          var arr = argName.value.split('.');
+          this.tags.push({name: arr[arr.length - 1] 
+                          ,file: sourcefile
+                          ,addr: argName.loc.start.line
+                          ,kind: "class"
+                          ,lineno: argName.loc.start.line
+                          ,scope: "global"
+                          });
+
+          
+        }   
+
+    } 
+  }
+}
+
+plugins.push(new SenchaTouchPlugin());
+
+//End Plugin
 exports.tags = tags;
 
 exports.generateTags = generateTags;
