@@ -240,7 +240,7 @@ function flags() {
   return {tagFile: tagFile}
 }
 
-//TODO:Move it to its own file Begin Plugin
+//TODO:SenchaTouchPlugin - Move it to its own file Begin Plugin
 function SenchaTouchPlugin () {  
   this.tags = undefined;
 }
@@ -250,6 +250,7 @@ SenchaTouchPlugin.prototype.init = function(tags) {
 }
 
 SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {
+  //* Class: Ext.define('Company.Project.Module.ClassName', { ... });
   if (ndCall.callee && ndCall.callee.object && ndCall.callee.object.name === 'Ext')
   {
     if (ndCall.callee && ndCall.callee.property && ndCall.callee.property.name === 'define')
@@ -265,12 +266,28 @@ SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {
                           ,lineno: argName.loc.start.line
                           ,scope: "global"
                           });
-
           
         }   
 
     } 
-  }
+  } //* Event handlers: objThatFiresTheEvent.on('eventName',...). 
+  else if (ndCall.callee && ndCall.callee.property && ndCall.callee.property.name === 'on')
+  {
+      var argName = ndCall.arguments && ndCall.arguments.length > 0 && ndCall.arguments[0];
+        if (argName && argName.type === 'Literal' && argName.value)
+        { 
+          this.tags.push({name: argName.value 
+                          ,file: sourcefile
+                          ,addr: argName.loc.start.line
+                          ,kind: "eventHandler"
+                          ,lineno: argName.loc.start.line
+                          ,scope: "global"
+                          });
+          
+        }   
+      //* Note: Currently, other forms of eventHandlers are tagged as properties:
+      //* <something>.on{eventName: ...} and listeners: { eventName: .... }
+  } 
 }
 
 plugins.push(new SenchaTouchPlugin());
