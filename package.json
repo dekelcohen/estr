@@ -1,0 +1,36 @@
+{
+  "name": "estr",
+  "version": "1.0.0",
+  "description": "CTags for JavaScript",
+  "main": "estr.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dekelcohen/estr.git"
+  },
+  "keywords": [
+    "javascript",
+    "ctags",
+    "tags",
+    "ast",
+    "astjs",
+    "parser",
+    "gotodef",
+    "goto-definition",
+    "autocompletion"
+  ],
+  "author": "clausreinke and dekelcohen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dekelcohen/estr/issues"
+  },
+  "homepage": "https://github.com/dekelcohen/estr#readme",
+  "dependencies": {
+    "minimatch": "^2.0.10"
+  }
+}

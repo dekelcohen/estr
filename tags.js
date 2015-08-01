@@ -230,14 +230,35 @@ function tagFile() {
 
 var classic = false;
 function flags() {
-  var tagFile = "tags";
-  if (classic = process.argv[0]==="--classic")
-    process.argv.shift();
-  if (process.argv[0]==="-o") {
-    process.argv.shift();
-    tagFile = process.argv.shift();
+  var tagFile = "tags",
+      exclude = [];
+  while (process.argv.length > 1)
+  {
+      var option = process.argv.shift(),
+          remain = process.argv.length > 0;
+        
+      if (option === '--classic')
+      {
+         classic = true;     
+      } else if (option === '-o' && remain)
+      {
+         tagFile = process.argv.shift();
+      } else if (option === '-exclude' && remain)
+      {         
+        var ex = process.argv.shift();
+        exclude.push( ex );
+      }
   }
-  return {tagFile: tagFile}
+  // if (classic = process.argv[0]==="--classic")
+  //   process.argv.shift();
+  // if (process.argv[0]==="-o") {
+  //   process.argv.shift();
+  //   tagFile = process.argv.shift();
+  // }
+  return {
+      tagFile: tagFile,
+      exclude: exclude
+   };
 }
 
 //TODO:SenchaTouchPlugin - Move it to its own file Begin Plugin

@@ -20,8 +20,8 @@ Commandline usage
 -----
 
 ```
-node estr.js tags ..paths
-  traverse paths, extract tags from .js-files, write to file "tags"
+node estr.js tags --classic -exclude **/*sencha-touch*.* -o .tags .
+  traverse current working directory (.) and its sub-directories, extract tags from .js-files, excluding *sencha-touch* and write to file ".tags"
 
 node estr.js rename file.js oldName <line> <column> newName
   rename oldName (at <line> <column>) to newName

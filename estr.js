@@ -13,6 +13,7 @@ var ndpath          = require("path");
 var tags        = require("./tags.js");
 var scope_utils = require("./scope_utils.js");
 var ast_utils   = require("./ast_utils.js");
+var minimatch = require("minimatch");
 
 var parseThen   = ast_utils.parseThen;
 
@@ -42,7 +43,7 @@ switch (process.argv.shift()) {
     (function(){
       // fairly stable, useable
       var options = tags.flags();
-      processJSfiles(process.argv,tags.generateTags);
+      processJSfiles(process.argv,tags.generateTags,options);
       fs.writeFileSync(options.tagFile,tags.tagFile().join('\n')); // TODO: OS-dep line end?
     })();
     break;
@@ -202,20 +203,36 @@ switch (process.argv.shift()) {
 
 // recurse into directories, process .js files, ignore others
 // (no protection against cycles)
-function processJSfiles(paths,action) {
+function processJSfiles(paths,action,options) {
   var stat,source;
   var results = [];
   paths.forEach(function(path) {
     stat = fs.statSync(path);
     if (stat.isFile() && path.match(/\.js$/)) {
-      source = fs.readFileSync(path,'utf8');
-      results.push( action(path,source) );
+      var excludePath = false;
+      if (options && options.exclude && options.exclude.length > 0)
+      {
+         excludePath = options.exclude.some(function(exGlob) {
+            var mPath = path.length > 0 && path.charAt(0) === '.' ? path.substr(1) : path;
+            //console.log('minimatch ' + path +' ' + exGlob + ' ' + minimatch('./a/a.js', '**/*.js')); 
+            return minimatch(mPath, exGlob);            
+         });
+      }
+      
+      if (excludePath)
+      {
+         console.error("Excluding " + path); 
+      } else
+      {
+        source = fs.readFileSync(path,'utf8');
+        results.push( action(path,source) );
+      }
     } else if (stat.isDirectory()) {
       var dirContents = fs.readdirSync(path);
       results.concat( processJSfiles(dirContents.map(function(p){return path + ndpath.sep + p})
-                                    ,action) );
+                                    ,action,options) );
     } else {
-      console.error("ignoring "+path);
+      console.error("Ignoring "+path);
     }
   }); 
   return results;
