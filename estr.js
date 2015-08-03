@@ -21,14 +21,17 @@ process.argv.shift(); // node
 process.argv.shift(); // estr.js
 
 // CLI, select task to perform
-switch (process.argv.shift()) {
+var command = process.argv.shift() || "help";
 
-  case "help":
+switch (command) {
+
+  case "help":  
     console.log('estr (Ecmascript traversals)');
     console.log();
     console.log('estr tags [--classic] [-o tagfile] ..paths');
     console.log('   traverse paths, extract tags from .js-files, write to file "tags"');
     console.log('   --classic  : record imprecise tags (function assignments and properties)');
+    console.log('   --exclude <glob>: exludes a directory or a file from tag generation. Ex: exludes all files containing "aabb" **/*aabb*.*');     
     console.log('   -o tagfile : write to file tagfile');
     console.log();
     console.log('estr rename [-i.suffix] file.js oldName <line> <column> newName');

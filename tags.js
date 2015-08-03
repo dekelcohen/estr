@@ -243,7 +243,7 @@ function flags() {
       } else if (option === '-o' && remain)
       {
          tagFile = process.argv.shift();
-      } else if (option === '-exclude' && remain)
+      } else if ((option === '-exclude' || option === '--exclude') && remain)
       {         
         var ex = process.argv.shift();
         exclude.push( ex );
