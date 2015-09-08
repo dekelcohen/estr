@@ -3,7 +3,7 @@
 
 var parse    = require("./esprima.js").parse; // TODO: use node_modules/ ?
 
-var traverse = require("./ast_utils.js").traverse;
+var traverseWithPath = require("./ast_utils.js").traverseWithPath;
 
 var tags = [];
 
@@ -26,7 +26,7 @@ function generateTags(sourcefile,source) {
         plugin.init(tags);
     });
 
-    function extractTags(node,children){
+    function extractTags(node,ancestorsPath,children){
         var scope;
 
         // TODO: various module systems
@@ -157,33 +157,33 @@ function generateTags(sourcefile,source) {
 
           node.properties.forEach(function(property){
 
-            if (property.value.type==='FunctionExpression') {
-              if (property.key.value) {
+            plugins.forEach(function(plugin) { 
+              plugin.visitObjectExpressionProperty(property,node,ancestorsPath,sourcefile);
+            });
 
+            if (property.value.type==='FunctionExpression' && property.key.value) {              
                 // approximation: we don't handle object properties properly,
                 // so record tags for function properties as globals
                 tags.push({name: property.key.value
                           ,file: sourcefile
                           ,addr: property.loc.start.line
-                          ,kind: "property"
+                          ,kind: "f"
                           ,lineno: property.loc.start.line
                           ,scope: "global"
                           });
 
-              } else if (property.key.name) {
-
+            } else if (property.key.name) {
                 // approximation: we don't handle object properties properly,
                 // so record tags for function properties as globals
                 tags.push({name: property.key.name
                           ,file: sourcefile
                           ,addr: property.loc.start.line
-                          ,kind: "property"
+                          ,kind: property.value.type==='FunctionExpression' ? "f" : "property"
                           ,lineno: property.loc.start.line
                           ,scope: "global"
                           });
 
               }
-            }
 
           });
 
@@ -193,7 +193,9 @@ function generateTags(sourcefile,source) {
             });
         }
 
-        children.forEach(traverse(extractTags));
+        children.forEach(function(child) {
+          traverseWithPath(extractTags)(child,ancestorsPath.slice().concat([node])); 
+        });
 
         if ((node.type==='FunctionDeclaration')
           ||(node.type==='FunctionExpression')) {
@@ -203,7 +205,7 @@ function generateTags(sourcefile,source) {
         }
       }
 
-    traverse(extractTags)(result);
+    traverseWithPath(extractTags)(result,[]);
 }
 
 // create tag file, as array of lines, in (sorted) tag-file format
@@ -221,8 +223,9 @@ function tagFile() {
   tagFile.push('!_TAG_PROGRAM_VERSION\t0.0\t');
 
   tags.forEach(function(tag){
+    def_symbol = tag.def_symbol ? ("\tdef_symbol:"+tag.def_symbol) : "";
     tagFile.push(tag.name+"\t"+tag.file+"\t"+tag.addr+";\"\t"+tag.kind
-               +"\tlineno:"+tag.lineno+"\tscope:"+tag.scope);
+               +"\tlineno:"+tag.lineno+"\tscope:"+tag.scope + def_symbol);
   });
 
   return tagFile;
@@ -268,6 +271,40 @@ function SenchaTouchPlugin () {
 
 SenchaTouchPlugin.prototype.init = function(tags) {
   this.tags = tags;
+}
+
+function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+
+//config : { isOffline : false, ... } --> gen tags: getIsOffline and setIsOffline
+//Problem: The definition symbol name (isOffline) != it's references  (setIsOffline) --> CTags plugin tries to find tag.symbol (setIsOffline)
+//  starting from addr (line) --> fails to finc config : isOffline
+//Solution: Added def_symbol:isOffline --> CTags plugin uses def_symbol instead of symbol --> if avail.  
+SenchaTouchPlugin.prototype.visitObjectExpressionProperty = function(property,parentNode,ancestorsPath, sourcefile) {
+  var me = this,
+      grandParent = ancestorsPath[ancestorsPath.length-1],
+      parentName = grandParent && grandParent.key && grandParent.key.name,
+      isConfig = parentName == 'config',
+      propName = property.key.name || property.key.value;
+      addTag = function(prefix) {
+        me.tags.push({name: prefix + capitalizeFirstLetter(propName) 
+                          ,file: sourcefile
+                          ,addr: property.key.loc.start.line
+                          ,kind: "f"
+                          ,lineno: property.key.loc.start.line
+                          ,scope: "global"
+                          ,def_symbol: propName
+                          });
+    
+      };
+
+  if (isConfig && propName)
+  {     
+    addTag('get');
+    addTag('set');
+  }
 }
 
 SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {

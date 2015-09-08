@@ -56,6 +56,22 @@ function traverse(action) { return function(object) {
     action(object,children);
 } }
 
+// as traverse, but provide access to parents (ancestors) path (from Program root)
+function traverseWithPath(action) { return function(object,ancestorsPath) {
+    var key, child, children = [];
+
+    for (key in object) {
+        if (object.hasOwnProperty(key)) {
+            child = object[key];
+            if (typeof child === 'object' && child !== null && !annotation[key]) {
+                children.push(child);
+            }
+        }
+    }
+    action(object,ancestorsPath,children);
+} }
+
+
 // as traverse, but provide access to parent keys
 function traverseWithKeys(action) { return function(parentKey_obj) {
     var key, child, children = [];
@@ -110,6 +126,7 @@ function findNode(location,node) {
 exports.registerAnnotations = registerAnnotations;
 exports.parseThen           = parseThen;
 exports.traverse            = traverse;
+exports.traverseWithPath    = traverseWithPath;
 exports.traverseWithKeys    = traverseWithKeys;
 exports.findNode            = findNode;
 
