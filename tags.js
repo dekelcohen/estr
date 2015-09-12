@@ -4,12 +4,15 @@
 var parse    = require("./esprima.js").parse; // TODO: use node_modules/ ?
 
 var traverseWithPath = require("./ast_utils.js").traverseWithPath;
+var hashCode = require("./util/common.js").hashCode;
 
-var tags = [];
-
+var tags = []; 
 var plugins = [];
 
-
+function nodeScope(node) {
+  return node.loc.start.line+":"+(node.loc.start.column+1)+"-"
+                     +node.loc.end.line+":"+node.loc.end.column;
+}
 // parse JS file, extract tags by traversing AST while tracking scopes
 function generateTags(sourcefile,source) {
 
@@ -43,8 +46,7 @@ function generateTags(sourcefile,source) {
         if ((node.type==='FunctionDeclaration')
           ||(node.type==='FunctionExpression')) {
 
-          scopes.push(node.loc.start.line+":"+(node.loc.start.column+1)+"-"
-                     +node.loc.end.line+":"+node.loc.end.column);
+          scopes.push(nodeScope(node));
 
           scope = scopes.length>1 ? scopes[scopes.length-2] : "global";
 
@@ -170,6 +172,7 @@ function generateTags(sourcefile,source) {
                           ,kind: "f"
                           ,lineno: property.loc.start.line
                           ,scope: "global"
+                          ,class_id: node.class_id
                           });
 
             } else if (property.key.name) {
@@ -181,6 +184,7 @@ function generateTags(sourcefile,source) {
                           ,kind: property.value.type==='FunctionExpression' ? "f" : "property"
                           ,lineno: property.loc.start.line
                           ,scope: "global"
+                          ,class_id: node.class_id
                           });
 
               }
@@ -224,8 +228,12 @@ function tagFile() {
 
   tags.forEach(function(tag){
     def_symbol = tag.def_symbol ? ("\tdef_symbol:"+tag.def_symbol) : "";
+    tag_id = tag.tag_id ? ("\ttag_id:"+tag.tag_id) : "";
+    class_id = tag.class_id ? ("\tclass_id:"+tag.class_id) : "";
+    children_scope = tag.children_scope ? ("\tchildren_scope:"+tag.children_scope) : "";
+    
     tagFile.push(tag.name+"\t"+tag.file+"\t"+tag.addr+";\"\t"+tag.kind
-               +"\tlineno:"+tag.lineno+"\tscope:"+tag.scope + def_symbol);
+               +"\tlineno:"+tag.lineno+"\tscope:"+tag.scope + def_symbol + tag_id + class_id + children_scope);
   });
 
   return tagFile;
@@ -288,7 +296,9 @@ SenchaTouchPlugin.prototype.visitObjectExpressionProperty = function(property,pa
       parentName = grandParent && grandParent.key && grandParent.key.name,
       isConfig = parentName == 'config',
       propName = property.key.name || property.key.value;
-      addTag = function(prefix) {
+      addConfigTag = function(prefix) {
+        var ndProperties = grandParent && ancestorsPath.length > 2 && ancestorsPath[ancestorsPath.length-3];
+            class_id = ndProperties && ndProperties.class_id;
         me.tags.push({name: prefix + capitalizeFirstLetter(propName) 
                           ,file: sourcefile
                           ,addr: property.key.loc.start.line
@@ -296,14 +306,15 @@ SenchaTouchPlugin.prototype.visitObjectExpressionProperty = function(property,pa
                           ,lineno: property.key.loc.start.line
                           ,scope: "global"
                           ,def_symbol: propName
+                          ,class_id: class_id
                           });
     
       };
 
   if (isConfig && propName)
   {     
-    addTag('get');
-    addTag('set');
+    addConfigTag('get');
+    addConfigTag('set');
   }
 }
 
@@ -316,15 +327,20 @@ SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {
         var argName = ndCall.arguments && ndCall.arguments.length > 0 && ndCall.arguments[0];
         if (argName && argName.type === 'Literal' && argName.value)
         {
-          var arr = argName.value.split('.');
+          var arr = argName.value.split('.'),
+            tag_id = hashCode(arr[arr.length - 1] + sourcefile + argName.loc.start.line);
           this.tags.push({name: arr[arr.length - 1] 
                           ,file: sourcefile
                           ,addr: argName.loc.start.line
-                          ,kind: "class"
+                          ,kind: 'c'
                           ,lineno: argName.loc.start.line
-                          ,scope: "global"
+                          ,scope: 'global'
+                          ,tag_id: tag_id
+                          ,children_scope:nodeScope(ndCall)
                           });
-          
+
+          var ndProperties = ndCall.arguments && ndCall.arguments.length > 1 && ndCall.arguments[1];
+          ndProperties.class_id = tag_id; //Now members of the class can reference its class_id for more accurate context and scope.  
         }   
 
     } 
@@ -349,6 +365,7 @@ SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {
 }
 
 plugins.push(new SenchaTouchPlugin());
+
 
 //End Plugin
 exports.tags = tags;
