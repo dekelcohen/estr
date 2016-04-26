@@ -5,7 +5,7 @@
 
 (function(require,exports){
 
-var esprima = require("./esprima.js");
+var parser = require("babylon");
 
 // mask out AST node fields that hold annotations, not child nodes;
 // standard annotations
@@ -22,7 +22,16 @@ function registerAnnotations(annotations) {
 function parseThen(action) { return function(sourcefile,source) {
 
   try {
-    var sourceAST = esprima.parse(source,{loc:true,range:true});
+    var sourceAST = parser.parse(source,{sourceFilename:true,
+          sourceType: 'module',
+          plugins: [
+          // enable experimental async functions
+          "asyncFunctions",
+
+          // enable jsx and flow syntax
+          "jsx",
+          "flow"
+        ]});
   } catch (e) {
     return {parseError:e,sourcefile:sourcefile};
   }

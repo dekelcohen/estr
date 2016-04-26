@@ -1,7 +1,8 @@
 
 (function(require,exports){
 
-var parse    = require("./esprima.js").parse; // TODO: use node_modules/ ?
+var parse    = require("babylon").parse; // TODO: use node_modules/ ?
+//var parse    = require("./esprima.js").parse;
 
 var traverseWithPath = require("./ast_utils.js").traverseWithPath;
 var hashCode = require("./util/common.js").hashCode;
@@ -17,7 +18,18 @@ function nodeScope(node) {
 function generateTags(sourcefile,source) {
 
     try {
-      var result = parse(source,{loc:true});
+  //    var result = parse(source,{loc:true});
+      var result = parse(source,{
+          sourceType: moduleParseMode ? 'module' : 'script',
+          plugins: [
+          // enable experimental async functions
+          "asyncFunctions",
+          // enable jsx and flow syntax
+          "jsx",
+          "flow"
+        ]
+        });
+       console.log(JSON.stringify(result));
     } catch (e) {
       console.error("parse error in "+sourcefile,e);
       return;
@@ -240,6 +252,7 @@ function tagFile() {
 }
 
 var classic = false;
+var moduleParseMode = false;
 function flags() {
   var tagFile = "tags",
       exclude = [];
@@ -258,6 +271,9 @@ function flags() {
       {         
         var ex = process.argv.shift();
         exclude.push( ex );
+      } else if (option === '--module')
+      {
+         moduleParseMode = true; 
       }
   }
   // if (classic = process.argv[0]==="--classic")
@@ -325,7 +341,7 @@ SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {
     if (ndCall.callee && ndCall.callee.property && ndCall.callee.property.name === 'define')
     {
         var argName = ndCall.arguments && ndCall.arguments.length > 0 && ndCall.arguments[0];
-        if (argName && argName.type === 'Literal' && argName.value)
+        if (argName && argName.type === 'StringLiteral' && argName.value)
         {
           var arr = argName.value.split('.'),
             tag_id = hashCode(arr[arr.length - 1] + sourcefile + argName.loc.start.line);
@@ -348,7 +364,7 @@ SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {
   else if (ndCall.callee && ndCall.callee.property && ndCall.callee.property.name === 'on')
   {
       var argName = ndCall.arguments && ndCall.arguments.length > 0 && ndCall.arguments[0];
-        if (argName && argName.type === 'Literal' && argName.value)
+        if (argName && argName.type === 'StringLiteral' && argName.value)
         { 
           this.tags.push({name: argName.value 
                           ,file: sourcefile

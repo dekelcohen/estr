@@ -28,8 +28,9 @@ switch (command) {
   case "help":  
     console.log('estr (Ecmascript traversals)');
     console.log();
-    console.log('estr tags [--classic] [-o tagfile] ..paths');
+    console.log('estr tags [--module] [--classic] [-o tagfile] ..paths');
     console.log('   traverse paths, extract tags from .js-files, write to file "tags"');
+    console.log('   --module  : for ES6: parse in strict mode and allow module declarations');
     console.log('   --classic  : record imprecise tags (function assignments and properties)');
     console.log('   --exclude <glob>: exludes a directory or a file from tag generation. Ex: exludes all files containing "aabb" **/*aabb*.*');     
     console.log('   -o tagfile : write to file tagfile');

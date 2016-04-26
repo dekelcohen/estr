@@ -1,7 +1,7 @@
 
 (function(require,exports){
 
-var parse    = require("./esprima.js").parse; // TODO: use node_modules/ ?
+var parse    = require("babylon").parse; // TODO: use node_modules/ ?
 
 var ast_utils        = require("./ast_utils.js");
 var traverse         = ast_utils.traverse;
