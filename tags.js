@@ -183,7 +183,7 @@ function generateTags(sourcefile,source) {
           node.properties.forEach(function(property){
 
             plugins.forEach(function(plugin) { 
-              plugin.visitObjectExpressionProperty(property,node,ancestorsPath,sourcefile);
+              plugin.visitObjectExpressionProperty && plugin.visitObjectExpressionProperty(property,node,ancestorsPath,sourcefile);
             });
 
             if (property.value && property.value.type==='FunctionExpression' && property.key && property.key.value) {              
@@ -216,7 +216,11 @@ function generateTags(sourcefile,source) {
 
         } else if (node.type==='CallExpression') {            
             plugins.forEach(function(plugin) { 
-              plugin.visitCallExpression(node, sourcefile);
+              plugin.visitCallExpression && plugin.visitCallExpression(node, sourcefile);
+            });
+        } else {
+          plugins.forEach(function(plugin) { 
+              plugin.visitUnknownNode && plugin.visitUnknownNode(node,ancestorsPath,sourcefile);
             });
         }
 
@@ -299,6 +303,10 @@ function flags() {
    };
 }
 
+function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 //TODO:SenchaTouchPlugin - Move it to its own file Begin Plugin
 function SenchaTouchPlugin () {  
   this.tags = undefined;
@@ -306,10 +314,6 @@ function SenchaTouchPlugin () {
 
 SenchaTouchPlugin.prototype.init = function(tags) {
   this.tags = tags;
-}
-
-function capitalizeFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 
@@ -393,8 +397,74 @@ SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {
 
 plugins.push(new SenchaTouchPlugin());
 
+//End SenchaTouchPlugin
 
-//End Plugin
+//EcmaScript 6/7/2016 plugin
+(function() { //immediate func scope for plugin
+
+function ES7Plugin () {  
+  this.tags = undefined;
+}
+
+ES7Plugin.prototype.init = function(tags) {
+  this.tags = tags;
+}
+
+ES7Plugin.prototype.visitUnknownNode = function(node,ancestorsPath, sourcefile) {
+  var me = this;
+
+
+  if (node.type==='ClassDeclaration') {
+     tag_id = hashCode(sourcefile + node.id.name);
+     this.tags.push({name: node.id.name 
+                      ,file: sourcefile
+                      ,addr: node.loc.start.line
+                      ,kind: 'c'
+                      ,lineno: node.loc.start.line
+                      ,scope: 'global'
+                      ,tag_id: tag_id
+                      ,children_scope:nodeScope(node)
+                      });
+
+      node.class_id = tag_id; //Now members of the class can reference its class_id for more accurate context and scope.  
+
+  } else if (node.type==='ClassMethod') {
+    var ndClassDecl = getClassDeclAnscestor(ancestorsPath);
+    tags.push({name: node.key.name
+              ,file: sourcefile
+              ,addr: node.loc.start.line
+              ,kind: "f"
+              ,lineno: node.loc.start.line
+              ,scope: "global"
+              ,class_id: ndClassDecl.class_id
+              });
+
+   } else if (node.type==='ClassProperty') { 
+
+     var ndClassDecl = getClassDeclAnscestor(ancestorsPath);
+     tags.push({name: node.key.name
+              ,file: sourcefile
+              ,addr: node.loc.start.line
+              ,kind: node.value && ( node.value.type==='FunctionExpression' || node.value.type==='ArrowFunctionExpression') ? "f" : "property"
+              ,lineno: node.loc.start.line
+              ,scope: "global"
+              ,class_id: ndClassDecl.class_id
+              });
+
+    }
+
+}
+
+function getClassDeclAnscestor(ancestorsPath)
+{
+  return ancestorsPath.length >= 3 && ancestorsPath[ancestorsPath.length-3];
+}
+
+plugins.push(new ES7Plugin());
+
+}());
+//End ES7Plugin
+
 exports.tags = tags;
 
 exports.generateTags = generateTags;
