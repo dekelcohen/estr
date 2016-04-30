@@ -1,8 +1,8 @@
 
-ESTR - ECMAScript traversals
-============================
+ESTR - JavaScript Modern CTags 
+==============================
 
-Javascript tool for working with Javascript code, using esprima.
+ES6/7 Javascript tool for working with Javascript code, using [babylon JavaScript parser](https://github.com/babel/babylon) 
 Estr has a commandline interface, using nodejs, but its modules can
 also be used from the browser. There is an [in-browser demo](http://clausreinke.github.com/estr) showing scoped
 variable highlighting, navigation to variable occurrences, and
@@ -10,7 +10,7 @@ variable renaming.
 
 Estr currently supports:
 
-- generating scope-aware tags from [esprima](http://esprima.org/) ASTs, for use with the [scoped_tags Vim mode](https://github.com/clausreinke/scoped_tags)
+- generating scope-aware tags from [babylon](https://github.com/babel/babylon) ASTs, for use with the [SublimeText Ctags](CTags) and [scoped_tags Vim mode](https://github.com/clausreinke/scoped_tags)
 
 - renaming a variable (this will currently output the modified file to stdout instead of replacing the file)
 
