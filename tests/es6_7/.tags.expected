@@ -1,0 +1,16 @@
+!_TAG_FILE_SORTED	1	
+!_TAG_PROGRAM_AUTHOR	Claus Reinke	
+!_TAG_PROGRAM_NAME	estr	
+!_TAG_PROGRAM_URL	https://github.com/clausreinke/estr	
+!_TAG_PROGRAM_VERSION	0.0	
+MyClass	tests\es6_7\simpleclass.js	1;"	c	lineno:1	scope:global	tag_id:1615209892	children_scope:1:1-28:1
+a	tests\es6_7\simpleclass.js	13;"	vp	lineno:13	scope:13:16-16:3
+arrowMethodProp1	tests\es6_7\simpleclass.js	8;"	f	lineno:8	scope:global	class_id:1615209892
+autoLoad	tests\es6_7\simpleclass.js	25;"	property	lineno:25	scope:global
+b	tests\es6_7\simpleclass.js	13;"	vp	lineno:13	scope:13:16-16:3
+connected	tests\es6_7\simpleclass.js	23;"	property	lineno:23	scope:global
+defaultProps	tests\es6_7\simpleclass.js	22;"	property	lineno:22	scope:global	class_id:1615209892
+loading	tests\es6_7\simpleclass.js	24;"	property	lineno:24	scope:global
+method1	tests\es6_7\simpleclass.js	3;"	f	lineno:3	scope:global	class_id:1615209892
+methodProp	tests\es6_7\simpleclass.js	13;"	f	lineno:13	scope:global	class_id:1615209892
+staticMethod	tests\es6_7\simpleclass.js	18;"	f	lineno:18	scope:global	class_id:1615209892
