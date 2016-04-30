@@ -24,12 +24,23 @@ function generateTags(sourcefile,source) {
           plugins: [
           // enable experimental async functions
           "asyncFunctions",
+          "classProperties", //class AAA { ooo = { x:3} }
+          "objectRestSpread",
+          "classConstructorCall",
+          "doExpressions",
+          "trailingFunctionCommas",
+          "decorators",
+          "exportExtensions",
+          "exponentiationOperator",
+          "asyncGenerators",
+          "functionBind",
+          "functionSent",
           // enable jsx and flow syntax
           "jsx",
           "flow"
         ]
         });
-       console.log(JSON.stringify(result));
+       //console.log(JSON.stringify(result)); //TODO:Debug:Remove
     } catch (e) {
       console.error("parse error in "+sourcefile,e);
       return;
@@ -175,7 +186,7 @@ function generateTags(sourcefile,source) {
               plugin.visitObjectExpressionProperty(property,node,ancestorsPath,sourcefile);
             });
 
-            if (property.value.type==='FunctionExpression' && property.key.value) {              
+            if (property.value && property.value.type==='FunctionExpression' && property.key && property.key.value) {              
                 // approximation: we don't handle object properties properly,
                 // so record tags for function properties as globals
                 tags.push({name: property.key.value
@@ -187,13 +198,13 @@ function generateTags(sourcefile,source) {
                           ,class_id: node.class_id
                           });
 
-            } else if (property.key.name) {
+            } else if (property.key && property.key.name) {
                 // approximation: we don't handle object properties properly,
                 // so record tags for function properties as globals
                 tags.push({name: property.key.name
                           ,file: sourcefile
                           ,addr: property.loc.start.line
-                          ,kind: property.value.type==='FunctionExpression' ? "f" : "property"
+                          ,kind: property.value && property.value.type==='FunctionExpression' ? "f" : "property"
                           ,lineno: property.loc.start.line
                           ,scope: "global"
                           ,class_id: node.class_id
@@ -311,7 +322,7 @@ SenchaTouchPlugin.prototype.visitObjectExpressionProperty = function(property,pa
       grandParent = ancestorsPath[ancestorsPath.length-1],
       parentName = grandParent && grandParent.key && grandParent.key.name,
       isConfig = parentName == 'config',
-      propName = property.key.name || property.key.value;
+      propName = property.key && (property.key.name || property.key.value);
       addConfigTag = function(prefix) {
         var ndProperties = grandParent && ancestorsPath.length > 2 && ancestorsPath[ancestorsPath.length-3];
             class_id = ndProperties && ndProperties.class_id;
