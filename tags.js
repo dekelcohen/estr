@@ -73,7 +73,8 @@ function generateTags(sourcefile,source) {
 
           scope = scopes.length>1 ? scopes[scopes.length-2] : "global";
 
-          if (node.type==='FunctionDeclaration')
+          if (node.type==='FunctionDeclaration' && node.id)
+          {
 
             tags.push({name: node.id.name
                       ,file: sourcefile
@@ -83,7 +84,8 @@ function generateTags(sourcefile,source) {
                       ,scope: scope
                       });
 
-          else if (node.id)
+          } else if (node.id)
+          {
 
             tags.push({name: node.id.name
                       ,file: sourcefile
@@ -93,6 +95,7 @@ function generateTags(sourcefile,source) {
                       ,scope: node.loc.start.line+":"+(node.loc.start.column+1)+"-"
                              +node.loc.end.line+":"+node.loc.end.column
                       });
+          }
 
           var paramScope = node.loc.start.line+":"+(node.loc.start.column+1)+"-"
                           +node.loc.end.line+":"+node.loc.end.column;

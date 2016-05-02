@@ -32,6 +32,6 @@
   "homepage": "https://github.com/dekelcohen/estr#readme",
   "dependencies": {
     "babylon": "^6.7.0",
-    "minimatch": "^2.0.10"
+    "glob-to-regexp": "^0.1.0"
   }
 }

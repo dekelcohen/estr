@@ -13,7 +13,7 @@ var ndpath          = require("path");
 var tags        = require("./tags.js");
 var scope_utils = require("./scope_utils.js");
 var ast_utils   = require("./ast_utils.js");
-var minimatch = require("minimatch");
+var globToRegExp = require('glob-to-regexp');
 
 var parseThen   = ast_utils.parseThen;
 
@@ -217,9 +217,12 @@ function processJSfiles(paths,action,options) {
       if (options && options.exclude && options.exclude.length > 0)
       {
          excludePath = options.exclude.some(function(exGlob) {
+            var re = globToRegExp(exGlob);
             var mPath = path.length > 0 && path.charAt(0) === '.' ? path.substr(1) : path;
-            //console.log('minimatch ' + path +' ' + exGlob + ' ' + minimatch('./a/a.js', '**/*.js')); 
-            return minimatch(mPath, exGlob);            
+            
+            mPath = mPath.length > 0 && mPath.charAt(0) === '\\' ? mPath.substr(1) : mPath;            
+            //console.log('re ' + mPath +' ' + exGlob + ' ' + re.test(mPath)); 
+            return re.test(mPath);            
          });
       }
       
