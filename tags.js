@@ -97,31 +97,16 @@ function generateTags(sourcefile,source) {
                       });
           }
 
-          var paramScope = node.loc.start.line+":"+(node.loc.start.column+1)+"-"
-                          +node.loc.end.line+":"+node.loc.end.column;
+          var paramScope = nodeScope(node);
 
           node.params.forEach(function(param){
-            tags.push({name: param.name
-                      ,file: sourcefile
-                      ,addr: param.loc.start.line
-                      ,kind: "vp"
-                      ,lineno: param.loc.start.line
-                      ,scope: paramScope
-                      });
+            indexDestructId(param,sourcefile,paramScope, 'vp');
           });
 
         } else if (node.type==='VariableDeclarator') {
 
           scope = scopes.length>0 ? scopes[scopes.length-1] : "global";
-
-          tags.push({name: node.id.name
-                    ,file: sourcefile
-                    ,addr: node.id.loc.start.line
-                    ,kind: "v"
-                    ,lineno: node.id.loc.start.line
-                    ,scope: scope
-                    });
-
+          indexDestructId(node.id,sourcefile,scope, 'v');
         } else if (node.type==='CatchClause') {
 
           tags.push({name: node.param.name
@@ -242,6 +227,29 @@ function generateTags(sourcefile,source) {
     traverseWithPath(extractTags)(result,[]);
 }
 
+//Destructuring assignment let {bar, baz} = foo + simple ES5 case var f1 = foo;
+function indexDestructId(id,sourcefile,scope, kind) {
+  if (id.name)
+  {
+    tags.push({name: id.name
+                      ,file: sourcefile
+                      ,addr: id.loc.start.line
+                      ,kind: kind
+                      ,lineno: id.loc.start.line
+                      ,scope: scope
+                      });
+  } else if (id.properties)
+  {
+      for (var i = 0; i < id.properties.length; ++i)
+      {
+         indexDestructId(id.properties[i].value, sourcefile,scope,kind);
+      }
+  } else
+  {
+    throw new Error("indexDestructId - fail to handle id without name or properties[]")
+  }
+
+}
 // create tag file, as array of lines, in (sorted) tag-file format
 function tagFile() {
 
@@ -441,6 +449,11 @@ ES7Plugin.prototype.visitUnknownNode = function(node,ancestorsPath, sourcefile) 
               ,scope: "global"
               ,class_id: ndClassDecl.class_id
               });
+    var paramScope = nodeScope(node);
+          
+    node.params.forEach(function(param){
+      indexDestructId(param,sourcefile,paramScope, 'vp');
+    });
 
    } else if (node.type==='ClassProperty') { 
 
