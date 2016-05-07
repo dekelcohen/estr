@@ -67,7 +67,8 @@ function generateTags(sourcefile,source) {
         //          for 1-based line/colums, we need to adjust start columns
 
         if ((node.type==='FunctionDeclaration')
-          ||(node.type==='FunctionExpression')) {
+          ||(node.type==='FunctionExpression')
+          ||(node.type==='ArrowFunctionExpression') ) {
 
           scopes.push(nodeScope(node));
 
