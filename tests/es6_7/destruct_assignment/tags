@@ -3,38 +3,64 @@
 !_TAG_PROGRAM_NAME	estr	
 !_TAG_PROGRAM_URL	https://github.com/clausreinke/estr	
 !_TAG_PROGRAM_VERSION	0.0	
-MyToast	destruct_assignment.js	1;"	c	lineno:1	scope:global	tag_id:-1129293446	children_scope:1:1-22:1
-a	destruct_assignment.js	26;"	v	lineno:26	scope:24:1-27:1
-a	destruct_assignment.js	8;"	v	lineno:8	scope:global
-alias_deep	destruct_assignment.js	4;"	v	lineno:4	scope:global
-b	destruct_assignment.js	26;"	v	lineno:26	scope:24:1-27:1
-b	destruct_assignment.js	8;"	v	lineno:8	scope:global
-bar	destruct_assignment.js	25;"	property	lineno:25	scope:global
-bar	destruct_assignment.js	7;"	property	lineno:7	scope:global
-bar	destruct_assignment.js	3;"	property	lineno:3	scope:global
-bar	destruct_assignment.js	12;"	v	lineno:12	scope:global
-bar	destruct_assignment.js	11;"	property	lineno:11	scope:global
-baz	destruct_assignment.js	11;"	property	lineno:11	scope:global
-baz	destruct_assignment.js	25;"	property	lineno:25	scope:global
-baz	destruct_assignment.js	7;"	property	lineno:7	scope:global
-baz	destruct_assignment.js	12;"	v	lineno:12	scope:global
-dangerouslySetInnerHTML	destruct_assignment.js	3;"	property	lineno:3	scope:global
-deep	destruct_assignment.js	3;"	property	lineno:3	scope:global
-foo	destruct_assignment.js	11;"	v	lineno:11	scope:global
-foo	destruct_assignment.js	3;"	v	lineno:3	scope:global
-foo	destruct_assignment.js	7;"	v	lineno:7	scope:global
-foo	destruct_assignment.js	25;"	v	lineno:25	scope:24:1-27:1
-onClose	destruct_assignment.js	16;"	v	lineno:16	scope:global
-one_flat	destruct_assignment.js	15;"	f	lineno:15	scope:global	class_id:-1129293446
-param1	destruct_assignment.js	19;"	vp	lineno:19	scope:19:3-21:3
-param1	destruct_assignment.js	24;"	vp	lineno:24	scope:24:1-27:1
-param2	destruct_assignment.js	19;"	vp	lineno:19	scope:19:3-21:3
-param2	destruct_assignment.js	24;"	vp	lineno:24	scope:24:1-27:1
-param3	destruct_assignment.js	19;"	vp	lineno:19	scope:19:3-21:3
-param3	destruct_assignment.js	24;"	vp	lineno:24	scope:24:1-27:1
-params_flat	destruct_assignment.js	19;"	f	lineno:19	scope:global	class_id:-1129293446
-render	destruct_assignment.js	24;"	f	lineno:24	scope:global
-sure	destruct_assignment.js	4;"	v	lineno:4	scope:global
-two_deep_alias	destruct_assignment.js	2;"	f	lineno:2	scope:global	class_id:-1129293446
-two_flat	destruct_assignment.js	10;"	f	lineno:10	scope:global	class_id:-1129293446
-two_flat_alias	destruct_assignment.js	6;"	f	lineno:6	scope:global	class_id:-1129293446
+MyToast	destruct_assignment.js	1;"	c	lineno:1	scope:global	tag_id:-1129293446	children_scope:1:1-58:1
+a	destruct_assignment.js	62;"	v	lineno:62	scope:60:1-63:1
+a	destruct_assignment.js	37;"	v	lineno:37	scope:global
+a	destruct_assignment.js	28;"	v	lineno:28	scope:global
+a	destruct_assignment.js	24;"	property	lineno:24	scope:global
+a1	destruct_assignment.js	23;"	v	lineno:23	scope:global
+ajax	destruct_assignment.js	54;"	v	lineno:54	scope:global
+alias_deep	destruct_assignment.js	33;"	v	lineno:33	scope:global
+arrow_func_param	destruct_assignment.js	16;"	f	lineno:16	scope:global	class_id:-1129293446
+b	destruct_assignment.js	37;"	v	lineno:37	scope:global
+b	destruct_assignment.js	7;"	v	lineno:7	scope:global
+b	destruct_assignment.js	24;"	property	lineno:24	scope:global
+b	destruct_assignment.js	62;"	v	lineno:62	scope:60:1-63:1
+b	destruct_assignment.js	28;"	v	lineno:28	scope:global
+b1	destruct_assignment.js	23;"	v	lineno:23	scope:global
+bar	destruct_assignment.js	40;"	property	lineno:40	scope:global
+bar	destruct_assignment.js	61;"	property	lineno:61	scope:global
+bar	destruct_assignment.js	41;"	v	lineno:41	scope:global
+bar	destruct_assignment.js	36;"	property	lineno:36	scope:global
+bar	destruct_assignment.js	32;"	property	lineno:32	scope:global
+baz	destruct_assignment.js	41;"	v	lineno:41	scope:global
+baz	destruct_assignment.js	61;"	property	lineno:61	scope:global
+baz	destruct_assignment.js	40;"	property	lineno:40	scope:global
+baz	destruct_assignment.js	36;"	property	lineno:36	scope:global
+c	destruct_assignment.js	28;"	v	lineno:28	scope:global
+d	destruct_assignment.js	28;"	v	lineno:28	scope:global
+dangerouslySetInnerHTML	destruct_assignment.js	32;"	property	lineno:32	scope:global
+data	destruct_assignment.js	54;"	vp	lineno:54	scope:54:16-56:5
+deep	destruct_assignment.js	32;"	property	lineno:32	scope:global
+deep_array	destruct_assignment.js	27;"	f	lineno:27	scope:global	class_id:-1129293446
+deepest	destruct_assignment.js	2;"	f	lineno:2	scope:global	class_id:-1129293446
+filesMetadata	destruct_assignment.js	13;"	v	lineno:13	scope:global
+foo	destruct_assignment.js	36;"	v	lineno:36	scope:global
+foo	destruct_assignment.js	61;"	v	lineno:61	scope:60:1-63:1
+foo	destruct_assignment.js	32;"	v	lineno:32	scope:global
+foo	destruct_assignment.js	40;"	v	lineno:40	scope:global
+names	destruct_assignment.js	17;"	v	lineno:17	scope:global
+nested	destruct_assignment.js	10;"	property	lineno:10	scope:global
+not_in_decl	destruct_assignment.js	22;"	f	lineno:22	scope:global	class_id:-1129293446
+onClose	destruct_assignment.js	45;"	v	lineno:45	scope:global
+one_flat	destruct_assignment.js	44;"	f	lineno:44	scope:global	class_id:-1129293446
+one_flat_default_val	destruct_assignment.js	12;"	f	lineno:12	scope:global	class_id:-1129293446
+p	destruct_assignment.js	54;"	vp	lineno:54	scope:54:16-56:5
+param1	destruct_assignment.js	48;"	vp	lineno:48	scope:48:3-50:3
+param1	destruct_assignment.js	60;"	vp	lineno:60	scope:60:1-63:1
+param2	destruct_assignment.js	48;"	vp	lineno:48	scope:48:3-50:3
+param2	destruct_assignment.js	60;"	vp	lineno:60	scope:60:1-63:1
+param3	destruct_assignment.js	48;"	vp	lineno:48	scope:48:3-50:3
+param3	destruct_assignment.js	60;"	vp	lineno:60	scope:60:1-63:1
+params_def_val	destruct_assignment.js	52;"	f	lineno:52	scope:global	class_id:-1129293446
+params_flat	destruct_assignment.js	48;"	f	lineno:48	scope:global	class_id:-1129293446
+prop	destruct_assignment.js	10;"	property	lineno:10	scope:global
+prop2	destruct_assignment.js	10;"	property	lineno:10	scope:global
+prop2	destruct_assignment.js	10;"	property	lineno:10	scope:global
+render	destruct_assignment.js	60;"	f	lineno:60	scope:global
+sure	destruct_assignment.js	33;"	v	lineno:33	scope:global
+two_deep_alias	destruct_assignment.js	31;"	f	lineno:31	scope:global	class_id:-1129293446
+two_flat	destruct_assignment.js	39;"	f	lineno:39	scope:global	class_id:-1129293446
+two_flat_alias	destruct_assignment.js	35;"	f	lineno:35	scope:global	class_id:-1129293446
+url	destruct_assignment.js	54;"	vp	lineno:54	scope:54:16-56:5
+x	destruct_assignment.js	4;"	v	lineno:4	scope:global

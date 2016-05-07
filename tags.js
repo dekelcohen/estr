@@ -229,24 +229,28 @@ function generateTags(sourcefile,source) {
 
 //Destructuring assignment let {bar, baz} = foo + simple ES5 case var f1 = foo;
 function indexDestructId(id,sourcefile,scope, kind) {
-  if (id.name)
+  var name = id.name || id.argument && id.argument.name || id.left && id.left.name;
+  var coll;
+  if (name)
   {
-    tags.push({name: id.name
+    tags.push({name:  name
                       ,file: sourcefile
                       ,addr: id.loc.start.line
                       ,kind: kind
                       ,lineno: id.loc.start.line
                       ,scope: scope
                       });
-  } else if (id.properties)
+  } else if (coll = id.properties || id.elements)
   {
-      for (var i = 0; i < id.properties.length; ++i)
+      for (var i = 0; i < coll.length; ++i)
       {
-         indexDestructId(id.properties[i].value, sourcefile,scope,kind);
+         var nestedId = id.properties ? coll[i].value : coll[i];
+         if (!nestedId && !id.properties) { continue; } //[ , , b] case
+         indexDestructId(nestedId, sourcefile,scope,kind);
       }
   } else
   {
-    throw new Error("indexDestructId - fail to handle id without name or properties[]")
+    throw new Error("indexDestructId - fail to handle id without name or properties[]\n" + "file: " + sourcefile + "\n" + JSON.stringify(id));
   }
 
 }
