@@ -1,0 +1,12 @@
+!_TAG_FILE_SORTED	1	
+!_TAG_PROGRAM_AUTHOR	Claus Reinke	
+!_TAG_PROGRAM_NAME	estr	
+!_TAG_PROGRAM_URL	https://github.com/clausreinke/estr	
+!_TAG_PROGRAM_VERSION	0.0	
+FieldClass	.\funcexpr.js	7;"	v	lineno:7	scope:6:1-9:1
+getInitialState	.\funcexpr.js	2;"	v	lineno:2	scope:global
+innerScopedFunc	.\funcexpr.js	13;"	v	lineno:13	scope:11:1-16:1
+newValue	.\funcexpr.js	6;"	vp	lineno:6	scope:6:1-9:1
+outerFunc	.\funcexpr.js	11;"	f	lineno:11	scope:global
+rawField	.\funcexpr.js	6;"	vp	lineno:6	scope:6:1-9:1
+validateValue	.\funcexpr.js	6;"	f	lineno:6	scope:global

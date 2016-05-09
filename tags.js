@@ -209,7 +209,7 @@ function generateTags(sourcefile,source) {
             });
         } else {
           plugins.forEach(function(plugin) { 
-              plugin.visitUnknownNode && plugin.visitUnknownNode(node,ancestorsPath,sourcefile);
+              plugin.visitUnknownNode && plugin.visitUnknownNode(node,ancestorsPath,sourcefile,scopes);
             });
         }
 
@@ -218,7 +218,9 @@ function generateTags(sourcefile,source) {
         });
 
         if ((node.type==='FunctionDeclaration')
-          ||(node.type==='FunctionExpression')) {
+          ||(node.type==='FunctionExpression')
+          ||(node.type==='ArrowFunctionExpression')
+          ||(node.type==='ClassMethod')) {
 
           scopes.pop();
 
@@ -426,7 +428,7 @@ ES7Plugin.prototype.init = function(tags) {
   this.tags = tags;
 }
 
-ES7Plugin.prototype.visitUnknownNode = function(node,ancestorsPath, sourcefile) {
+ES7Plugin.prototype.visitUnknownNode = function(node,ancestorsPath, sourcefile,scopes) {
   var me = this;
 
 
@@ -445,6 +447,8 @@ ES7Plugin.prototype.visitUnknownNode = function(node,ancestorsPath, sourcefile) 
       node.class_id = tag_id; //Now members of the class can reference its class_id for more accurate context and scope.  
 
   } else if (node.type==='ClassMethod') {
+    scopes.push(nodeScope(node));
+
     var ndClassDecl = getClassDeclAnscestor(ancestorsPath);
     tags.push({name: node.key.name
               ,file: sourcefile
@@ -454,6 +458,7 @@ ES7Plugin.prototype.visitUnknownNode = function(node,ancestorsPath, sourcefile) 
               ,scope: "global"
               ,class_id: ndClassDecl.class_id
               });
+
     var paramScope = nodeScope(node);
           
     node.params.forEach(function(param){
