@@ -7,7 +7,19 @@ var parse    = require("babylon").parse; // TODO: use node_modules/ ?
 var traverseWithPath = require("./ast_utils.js").traverseWithPath;
 var hashCode = require("./util/common.js").hashCode;
 
-var tags = []; 
+var tags = [];
+var sourcelines = [];  //access text of a line from source file by index 
+var tags_push = function(tag) {
+  if (tag.lineno && (tag.lineno <= sourcelines.length))
+  {
+      tag.dispinfo = sourcelines[tag.lineno - 1];        
+  } else
+  {
+    console.log('Failed to dispinfo: tag.lineno=' + tag.lineno + ' sourcelines.length=' + sourcelines.length);
+  }
+  tags.push(tag);
+}
+
 var plugins = [];
 
 function nodeScope(node) {
@@ -16,6 +28,8 @@ function nodeScope(node) {
 }
 // parse JS file, extract tags by traversing AST while tracking scopes
 function generateTags(sourcefile,source) {
+
+    sourcelines = source.split(/\r?\n/); //access text of a line from source file by index 
 
     try {
   //    var result = parse(source,{loc:true});
@@ -77,7 +91,7 @@ function generateTags(sourcefile,source) {
           if (node.type==='FunctionDeclaration' && node.id)
           {
 
-            tags.push({name: node.id.name
+            tags_push({name: node.id.name
                       ,file: sourcefile
                       ,addr: node.id.loc.start.line
                       ,kind: "f"
@@ -88,7 +102,7 @@ function generateTags(sourcefile,source) {
           } else if (node.id)
           {
 
-            tags.push({name: node.id.name
+            tags_push({name: node.id.name
                       ,file: sourcefile
                       ,addr: node.id.loc.start.line
                       ,kind: "fe"
@@ -110,7 +124,7 @@ function generateTags(sourcefile,source) {
           indexDestructId(node.id,sourcefile,scope, 'v');
         } else if (node.type==='CatchClause') {
 
-          tags.push({name: node.param.name
+          tags_push({name: node.param.name
                     ,file: sourcefile
                     ,addr: node.param.loc.start.line
                     ,kind: "ve"
@@ -130,7 +144,7 @@ function generateTags(sourcefile,source) {
 
               // approximation: we don't handle module systems properly,
               // so record tags for 'exports' properties, at least
-              tags.push({name: node.left.property.name
+              tags_push({name: node.left.property.name
                         ,file: sourcefile
                         ,addr: node.left.property.loc.start.line
                         ,kind: "export"
@@ -146,7 +160,7 @@ function generateTags(sourcefile,source) {
 
               // approximation: we don't handle object properties properly,
               // so record tags for 'prototype' properties as globals
-              tags.push({name: node.left.property.name
+              tags_push({name: node.left.property.name
                         ,file: sourcefile
                         ,addr: node.left.property.loc.start.line
                         ,kind: "prototype"
@@ -157,7 +171,7 @@ function generateTags(sourcefile,source) {
             } else if (classic && node.right.type==='FunctionExpression') {
 
               // approximation: record tags for function assignments as globals
-              tags.push({name: node.left.property.name
+              tags_push({name: node.left.property.name
                         ,file: sourcefile
                         ,addr: node.left.property.loc.start.line
                         ,kind: "fa"
@@ -178,7 +192,7 @@ function generateTags(sourcefile,source) {
             if (property.value && property.value.type==='FunctionExpression' && property.key && property.key.value) {              
                 // approximation: we don't handle object properties properly,
                 // so record tags for function properties as globals
-                tags.push({name: property.key.value
+                tags_push({name: property.key.value
                           ,file: sourcefile
                           ,addr: property.loc.start.line
                           ,kind: "f"
@@ -190,7 +204,7 @@ function generateTags(sourcefile,source) {
             } else if (property.key && property.key.name) {
                 // approximation: we don't handle object properties properly,
                 // so record tags for function properties as globals
-                tags.push({name: property.key.name
+                tags_push({name: property.key.name
                           ,file: sourcefile
                           ,addr: property.loc.start.line
                           ,kind: property.value && property.value.type==='FunctionExpression' ? "f" : "property"
@@ -236,7 +250,7 @@ function indexDestructId(id,sourcefile,scope, kind) {
   var coll;
   if (name)
   {
-    tags.push({name:  name
+    tags_push({name:  name
                       ,file: sourcefile
                       ,addr: id.loc.start.line
                       ,kind: kind
@@ -275,10 +289,10 @@ function tagFile() {
     def_symbol = tag.def_symbol ? ("\tdef_symbol:"+tag.def_symbol) : "";
     tag_id = tag.tag_id ? ("\ttag_id:"+tag.tag_id) : "";
     class_id = tag.class_id ? ("\tclass_id:"+tag.class_id) : "";
-    children_scope = tag.children_scope ? ("\tchildren_scope:"+tag.children_scope) : "";
-    
+    children_scope = tag.children_scope ? ("\tchildren_scope:"+tag.children_scope) : "";    
+    dispinfo = tag.dispinfo ? ("\tdispinfo:"+tag.dispinfo) : "";
     tagFile.push(tag.name+"\t"+tag.file+"\t"+tag.addr+";\"\t"+tag.kind
-               +"\tlineno:"+tag.lineno+"\tscope:"+tag.scope + def_symbol + tag_id + class_id + children_scope);
+               +"\tlineno:"+tag.lineno+"\tscope:"+tag.scope + def_symbol + tag_id + class_id + children_scope + dispinfo);
   });
 
   return tagFile;
@@ -348,7 +362,7 @@ SenchaTouchPlugin.prototype.visitObjectExpressionProperty = function(property,pa
       addConfigTag = function(prefix) {
         var ndProperties = grandParent && ancestorsPath.length > 2 && ancestorsPath[ancestorsPath.length-3];
             class_id = ndProperties && ndProperties.class_id;
-        me.tags.push({name: prefix + capitalizeFirstLetter(propName) 
+        tags_push({name: prefix + capitalizeFirstLetter(propName) 
                           ,file: sourcefile
                           ,addr: property.key.loc.start.line
                           ,kind: "f"
@@ -378,7 +392,7 @@ SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {
         {
           var arr = argName.value.split('.'),
             tag_id = hashCode(arr[arr.length - 1] + sourcefile + argName.loc.start.line);
-          this.tags.push({name: arr[arr.length - 1] 
+          tags_push({name: arr[arr.length - 1] 
                           ,file: sourcefile
                           ,addr: argName.loc.start.line
                           ,kind: 'c'
@@ -399,7 +413,7 @@ SenchaTouchPlugin.prototype.visitCallExpression = function(ndCall,sourcefile) {
       var argName = ndCall.arguments && ndCall.arguments.length > 0 && ndCall.arguments[0];
         if (argName && argName.type === 'StringLiteral' && argName.value)
         { 
-          this.tags.push({name: argName.value 
+                tags_push({name: argName.value 
                           ,file: sourcefile
                           ,addr: argName.loc.start.line
                           ,kind: "eventHandler"
@@ -434,7 +448,7 @@ ES7Plugin.prototype.visitUnknownNode = function(node,ancestorsPath, sourcefile,s
 
   if (node.type==='ClassDeclaration') {
      tag_id = hashCode(sourcefile + node.id.name);
-     this.tags.push({name: node.id.name 
+            tags_push({name: node.id.name 
                       ,file: sourcefile
                       ,addr: node.loc.start.line
                       ,kind: 'c'
@@ -450,7 +464,7 @@ ES7Plugin.prototype.visitUnknownNode = function(node,ancestorsPath, sourcefile,s
     scopes.push(nodeScope(node));
 
     var ndClassDecl = getClassDeclAnscestor(ancestorsPath);
-    tags.push({name: node.key.name
+    tags_push({name: node.key.name
               ,file: sourcefile
               ,addr: node.loc.start.line
               ,kind: "f"
@@ -468,7 +482,7 @@ ES7Plugin.prototype.visitUnknownNode = function(node,ancestorsPath, sourcefile,s
    } else if (node.type==='ClassProperty') { 
 
      var ndClassDecl = getClassDeclAnscestor(ancestorsPath);
-     tags.push({name: node.key.name
+     tags_push({name: node.key.name
               ,file: sourcefile
               ,addr: node.loc.start.line
               ,kind: node.value && ( node.value.type==='FunctionExpression' || node.value.type==='ArrowFunctionExpression') ? "f" : "property"

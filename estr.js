@@ -221,7 +221,7 @@ function processJSfiles(paths,action,options) {
             var mPath = path.length > 0 && path.charAt(0) === '.' ? path.substr(1) : path;
             
             mPath = mPath.length > 0 && mPath.charAt(0) === '\\' ? mPath.substr(1) : mPath;            
-            //console.log('re ' + mPath +' ' + exGlob + ' ' + re.test(mPath)); 
+            //console.log('re ' + mPath +' ' + re + ' ' + re.test(mPath)); 
             return re.test(mPath);            
          });
       }
