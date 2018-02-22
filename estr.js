@@ -48,7 +48,12 @@ switch (command) {
       // fairly stable, useable
       var options = tags.flags();
       processJSfiles(process.argv,tags.generateTags,options);
-      fs.writeFileSync(options.tagFile,tags.tagFile().join('\n')); // TODO: OS-dep line end?
+      var file = fs.createWriteStream(options.tagFile);
+      console.log('Indexed tags: ',tags.tagFile().length);
+      tags.tagFile().forEach(function(tag,idx) {
+       file.write(tag + '\n'); 
+      });
+      file.end();
     })();
     break;
 
@@ -228,7 +233,8 @@ function processJSfiles(paths,action,options) {
       
       if (excludePath)
       {
-         console.error("Excluding " + path); 
+          //Temp silent mode - solution: do not print while running and dump at the end of run ?
+         //console.error("Excluding " + path); 
       } else
       {
         source = fs.readFileSync(path,'utf8');
@@ -239,7 +245,7 @@ function processJSfiles(paths,action,options) {
       results.concat( processJSfiles(dirContents.map(function(p){return path + ndpath.sep + p})
                                     ,action,options) );
     } else {
-      console.error("Ignoring "+path);
+      //console.error("Ignoring "+path);
     }
   }); 
   return results;
