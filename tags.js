@@ -246,7 +246,7 @@ function generateTags(sourcefile,source) {
 
 //Destructuring assignment let {bar, baz} = foo + simple ES5 case var f1 = foo;
 function indexDestructId(id,sourcefile,scope, kind) {
-  var name = id.name || id.argument && id.argument.name || id.left && id.left.name;
+  var name = id && (id.name || id.argument && id.argument.name || id.left && id.left.name);
   var coll;
   if (name)
   {
@@ -257,7 +257,7 @@ function indexDestructId(id,sourcefile,scope, kind) {
                       ,lineno: id.loc.start.line
                       ,scope: scope
                       });
-  } else if (coll = id.properties || id.elements)
+  } else if (id && (coll = id.properties || id.elements))
   {
       for (var i = 0; i < coll.length; ++i)
       {

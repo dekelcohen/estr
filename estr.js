@@ -217,7 +217,7 @@ function processJSfiles(paths,action,options) {
   var results = [];
   paths.forEach(function(path) {
     stat = fs.statSync(path);
-    if (stat.isFile() && path.match(/\.js$/)) {
+    if (stat.isFile() && path.match(/\.js(x*)$|\.es(6*)$/)) {
       var excludePath = false;
       if (options && options.exclude && options.exclude.length > 0)
       {
