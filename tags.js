@@ -12,7 +12,7 @@ var sourcelines = [];  //access text of a line from source file by index
 var tags_push = function(tag) {
   if (tag.lineno && (tag.lineno <= sourcelines.length))
   {
-      tag.dispinfo = sourcelines[tag.lineno - 1].substr(0,30);        
+      tag.dispinfo = sourcelines[tag.lineno - 1].substr(0,100);        
   } else
   {
     console.log('Failed to dispinfo: tag.lineno=' + tag.lineno + ' sourcelines.length=' + sourcelines.length);
