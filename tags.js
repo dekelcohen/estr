@@ -168,7 +168,7 @@ function generateTags(sourcefile,source) {
                         ,scope: "global"
                         });
 
-            } else if (classic && node.right.type==='FunctionExpression') {
+            } else if (classic && (node.right.type==='FunctionExpression' || node.right.type==='ArrowFunctionExpression')) {
 
               // approximation: record tags for function assignments as globals
               tags_push({name: node.left.property.name
@@ -189,7 +189,7 @@ function generateTags(sourcefile,source) {
               plugin.visitObjectExpressionProperty && plugin.visitObjectExpressionProperty(property,node,ancestorsPath,sourcefile);
             });
 
-            if (property.value && property.value.type==='FunctionExpression' && property.key && property.key.value) {              
+            if (property.value && (property.value.type==='FunctionExpression' || property.value.type==='ArrowFunctionExpression') && property.key && property.key.value) {              
                 // approximation: we don't handle object properties properly,
                 // so record tags for function properties as globals
                 tags_push({name: property.key.value
@@ -207,14 +207,13 @@ function generateTags(sourcefile,source) {
                 tags_push({name: property.key.name
                           ,file: sourcefile
                           ,addr: property.loc.start.line
-                          ,kind: property.value && property.value.type==='FunctionExpression' ? "f" : "property"
+                          ,kind: (property.type ===  'ObjectMethod') || (property.value && (property.value.type==='FunctionExpression' || property.value.type==='ArrowFunctionExpression')) ? "f" : "property"
                           ,lineno: property.loc.start.line
                           ,scope: "global"
                           ,class_id: node.class_id
                           });
 
-              }
-
+            }
           });
 
         } else if (node.type==='CallExpression') {            
