@@ -284,12 +284,16 @@ function tagFile() {
   tagFile.push('!_TAG_PROGRAM_URL\thttps://github.com/clausreinke/estr\t');
   tagFile.push('!_TAG_PROGRAM_VERSION\t0.0\t');
 
+  function encode_field(fld_str) {
+    return fld_str.split('\t').join(' ');
+  }
+
   tags.forEach(function(tag){
     def_symbol = tag.def_symbol ? ("\tdef_symbol:"+tag.def_symbol) : "";
     tag_id = tag.tag_id ? ("\ttag_id:"+tag.tag_id) : "";
     class_id = tag.class_id ? ("\tclass_id:"+tag.class_id) : "";
     children_scope = tag.children_scope ? ("\tchildren_scope:"+tag.children_scope) : "";    
-    dispinfo = tag.dispinfo ? ("\tdispinfo:"+tag.dispinfo) : "";
+    dispinfo = tag.dispinfo ? ("\tdispinfo:"+encode_field(tag.dispinfo)) : "";
     tagFile.push(tag.name+"\t"+tag.file+"\t"+tag.addr+";\"\t"+tag.kind
                +"\tlineno:"+tag.lineno+"\tscope:"+tag.scope + def_symbol + tag_id + class_id + children_scope + dispinfo);
   });
