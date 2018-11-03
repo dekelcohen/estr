@@ -12,9 +12,6 @@ Estr currently supports:
 
 - generating scope-aware tags from [babylon](https://github.com/babel/babylon) ASTs, for use with the [SublimeText Ctags](CTags) and [scoped_tags Vim mode](https://github.com/clausreinke/scoped_tags)
 
-- renaming a variable (this will currently output the modified file to stdout instead of replacing the file)
-
-- find variable binding and other occurrences
 
 Commandline usage
 -----
